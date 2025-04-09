@@ -1,5 +1,7 @@
 # GoFlint 🔥
 
+> **[WIP]** Project in active dev state.
+
 **GoFlint** is an idiomatic Go library for submitting Apache Spark jobs via `spark-submit`.  
 Designed for clarity and type safety, it wraps Spark’s CLI with a fluent Go API.
 
