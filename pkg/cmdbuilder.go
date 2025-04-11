@@ -1,9 +1,10 @@
 package goflint
 
 import (
+	"strings"
+
 	"goflint/pkg/common"
 	"goflint/pkg/sparkconf"
-	"strings"
 )
 
 type SparkSubmitCmd struct {
@@ -73,6 +74,7 @@ func (s *SparkSubmitCmd) ApplicationArgs(applicationArgs ...string) *SparkSubmit
 	s.aplicationArgs = append(s.aplicationArgs, applicationArgs...)
 	return s
 }
+
 func (s *SparkSubmitCmd) WithName(name string) *SparkSubmitCmd {
 	s.args = append(s.args, "--name", name)
 	return s
@@ -81,9 +83,11 @@ func (s *SparkSubmitCmd) WithName(name string) *SparkSubmitCmd {
 func (s *SparkSubmitCmd) buildArgs() string {
 	return strings.Join(s.args, " ")
 }
+
 func (s *SparkSubmitCmd) buildAppArgs() string {
 	return strings.Join(s.aplicationArgs, " ")
 }
+
 func (s *SparkSubmitCmd) buildConf() string {
 	return strings.Join(s.conf.ToCommandLineArgs(), " ")
 }
