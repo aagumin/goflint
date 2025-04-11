@@ -2,6 +2,7 @@ package goflint
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -28,11 +29,13 @@ func (s *SparkApp) Submit(ctx context.Context) error {
 		return fmt.Errorf("env %s is not specified", common.EnvSparkHome)
 	}
 	command := filepath.Join(sparkHome, "bin", "spark-submit")
+	fmt.Println(command)
 	cmd := exec.Command(command, s.repr)
 	_, err := cmd.Output()
 	if err != nil {
 		var errorMsg string
-		if exitErr, ok := err.(*exec.ExitError); ok {
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
 			errorMsg = string(exitErr.Stderr)
 		}
 		// The driver pod of the application already exists.

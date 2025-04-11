@@ -9,14 +9,23 @@ import (
 type SparkSubmitCmd struct {
 	conf           *sparkconf.SparkConf
 	args           []string
-	application    *string
+	application    string
 	aplicationArgs []string
 	command        string
 }
 
-func NewSparkSubmitCmd(base *SparkApp) *SparkSubmitCmd {
+func CrateOrUpdate(base *SparkApp) *SparkSubmitCmd {
 	// если base == nil, начинаем с пустого
-	return &SparkSubmitCmd{}
+	if base == nil {
+		return &SparkSubmitCmd{}
+	}
+	return &SparkSubmitCmd{
+		conf:           base.command.conf,
+		args:           base.command.args,
+		application:    base.command.application,
+		aplicationArgs: base.command.aplicationArgs,
+		command:        base.command.command,
+	}
 }
 
 // spark://host:port, mesos://host:port, yarn,
@@ -55,13 +64,17 @@ func (s *SparkSubmitCmd) WithSparkConf(conf *sparkconf.SparkConf) *SparkSubmitCm
 	return s
 }
 
-func (s *SparkSubmitCmd) Application(application *string) *SparkSubmitCmd {
+func (s *SparkSubmitCmd) Application(application string) *SparkSubmitCmd {
 	s.application = application
 	return s
 }
 
 func (s *SparkSubmitCmd) ApplicationArgs(applicationArgs ...string) *SparkSubmitCmd {
 	s.aplicationArgs = append(s.aplicationArgs, applicationArgs...)
+	return s
+}
+func (s *SparkSubmitCmd) WithName(name string) *SparkSubmitCmd {
+	s.args = append(s.args, "--name", name)
 	return s
 }
 
@@ -78,7 +91,7 @@ func (s *SparkSubmitCmd) buildConf() string {
 func (s *SparkSubmitCmd) Build() SparkApp {
 	// args + cfg + app + apparg
 	var b []string
-	b = []string{s.buildArgs(), s.buildConf(), *s.application, s.buildAppArgs()}
+	b = []string{s.buildArgs(), s.buildConf(), s.application, s.buildAppArgs()}
 	cmd := strings.Join(b, " ")
 	return SparkApp{command: s, repr: cmd}
 }

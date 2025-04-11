@@ -27,7 +27,7 @@ package main
 import github.com/aagumin/goflint
 
 func main() {
-   base := goflint.NewSparkSubmit().
+   base := goflint.CrateOrUpdate().
       Application("job.jar").
       WithMaster("k8s://http://k8s-master:443").
       WithName("GoFlint").
@@ -38,7 +38,7 @@ func main() {
    sparkCfg := goflint.SparkConf{}
    sparkCfg.Set("spark.driver.port", "grpc")
    
-   app := goflint.NewSparkSubmit(base).
+   app := goflint.CrateOrUpdate(base).
       WithSparkConf(sparkCfg)
       NumExecutors(5).
       DriverMemory("16Gi").

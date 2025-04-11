@@ -33,8 +33,8 @@ type Monitor interface {
 
 type SparkConf interface {
 	Set(key, value string) *SparkConf
-	Get(key string) *SparkConf
-	GetAll() map[string]*SparkConf
+	Get(key string) string
+	GetAll() map[string]string
 	ToCommandLineArgs() []string
 	SetIfMissing(key, value string) *SparkConf
 }
