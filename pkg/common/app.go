@@ -1,4 +1,4 @@
-package goflint
+package common
 
 import "context"
 
@@ -29,4 +29,12 @@ type Submitter interface {
 type Monitor interface {
 	Status(ctx context.Context) (string, error)
 	Kill(ctx context.Context) error
+}
+
+type SparkConf interface {
+	Set(key, value string) *SparkConf
+	Get(key string) *SparkConf
+	GetAll() map[string]*SparkConf
+	ToCommandLineArgs() []string
+	SetIfMissing(key, value string) *SparkConf
 }

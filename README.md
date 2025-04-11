@@ -27,23 +27,28 @@ package main
 import github.com/aagumin/goflint
 
 func main() {
-      base := goflint.NewSparkSubmitCmd(nil).
-            WithApp("job.jar").
-            WithMaster("yarn").
-            WithName("--name", "BaseJob").
-            Build()
+   base := goflint.NewSparkSubmit().
+      Application("job.jar").
+      WithMaster("k8s://http://k8s-master:443").
+      WithName("GoFlint").
+      Build()
+   
+   // base <- SparkApp{Kill, Status, Submit}
+   
+   sparkCfg := goflint.SparkConf{}
+   sparkCfg.Set("spark.driver.port", "grpc")
+   
+   app := goflint.NewSparkSubmit(base).
+      WithSparkConf(sparkCfg)
+      NumExecutors(5).
+      DriverMemory("16Gi").
+      Build()
 
-      dev := goflint.NewSparkSubmitCmd(base).
-            Executors(5).
-            WithFlag("verbose").
-            DriverMemory("16Gi").
-            Build()
+   ctx := context.Background()
 
-      ctx := context.Background()
-
-      if err := dev.Submit(ctx); err != nil {
+   if err := app.Submit(ctx); err != nil {
       log.Fatal(err)
-      }
+   }
 }
 ```
 

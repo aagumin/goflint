@@ -2,47 +2,57 @@ package goflint
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"strings"
+
+	"goflint/pkg/common"
 )
 
 type SparkApp struct {
-	appPath string
-	args    []string
-	opts    map[string]string
-	flags   map[string]bool
+	command *SparkSubmitCmd
+	repr    string
 }
 
 // Compile-time check
-var _ Submitter = (*SparkApp)(nil)
-var _ Monitor = (*SparkApp)(nil)
+var (
+	_ common.Submitter = (*SparkApp)(nil)
+	_ common.Monitor   = (*SparkApp)(nil)
+)
 
 func (s *SparkApp) Submit(ctx context.Context) error {
-	cmdArgs := s.buildArgs()
-	cmd := exec.CommandContext(ctx, "spark-submit", cmdArgs...)
-	return cmd.Run()
+	sparkHome, present := os.LookupEnv(common.EnvSparkHome)
+	if !present {
+		return fmt.Errorf("env %s is not specified", common.EnvSparkHome)
+	}
+	command := filepath.Join(sparkHome, "bin", "spark-submit")
+	cmd := exec.Command(command, s.repr)
+	_, err := cmd.Output()
+	if err != nil {
+		var errorMsg string
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			errorMsg = string(exitErr.Stderr)
+		}
+		// The driver pod of the application already exists.
+		if strings.Contains(errorMsg, common.ErrorCodePodAlreadyExists) {
+			return fmt.Errorf("driver pod already exist")
+		}
+		if errorMsg != "" {
+			return fmt.Errorf("failed to run spark-submit: %s", errorMsg)
+		}
+		return fmt.Errorf("failed to run spark-submit: %v", err)
+	}
+	return nil
 }
 
 func (s *SparkApp) Status(ctx context.Context) (string, error) {
 	// TODO: Implement real status logic
-	return "UNKNOWN", nil
+	return "", fmt.Errorf("not implemented")
 }
 
 func (s *SparkApp) Kill(ctx context.Context) error {
 	// TODO: Implement real kill logic
-	return nil
-}
-
-func (s *SparkApp) buildArgs() []string {
-	args := []string{}
-	for k, v := range s.opts {
-		args = append(args, k, v)
-	}
-	for flag, enabled := range s.flags {
-		if enabled {
-			args = append(args, flag)
-		}
-	}
-	args = append(args, s.appPath)
-	args = append(args, s.args...)
-	return args
+	return fmt.Errorf("not implemented yet")
 }
