@@ -32,9 +32,14 @@ type Monitor interface {
 }
 
 type SparkConf interface {
-	Set(key, value string) *SparkConf
 	Get(key string) string
 	GetAll() map[string]string
 	ToCommandLineArgs() []string
-	SetIfMissing(key, value string) *SparkConf
+	Merge(other SparkConf) SparkConf
+}
+
+type SparkConfHelpets interface {
+	SparkConf
+	IsEmpty() bool
+	Repr() string
 }

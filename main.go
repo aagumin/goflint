@@ -1,32 +1,31 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	goflint "goflint/pkg"
-	sconf "goflint/pkg/sparkconf"
-	"log"
 )
 
 func main() {
-	base := goflint.CrateOrUpdate(nil).
+	// base <- SparkApp{Kill, Status, Submit}
+	//xx := map[string]string{"spark.driver.port": "grpc"}
+	//sparkCfg := sconf.NewFrozenConf(xx)
+
+	base := goflint.CrateOrUpdate().
 		Application("job.jar").
+		//WithSparkConf(sparkCfg).
 		WithMaster(nil).
 		WithName("GoFlint").
 		Build()
 
-	// base <- SparkApp{Kill, Status, Submit}
-
-	sparkCfg := sconf.SparkConf{}
-	sparkCfg.Set("spark.driver.port", "grpc")
-
-	app := goflint.CrateOrUpdate(&base).
-		WithSparkConf(&sparkCfg).
-		Build()
-	fmt.Println(app)
-	ctx := context.Background()
-
-	if err := app.Submit(ctx); err != nil {
-		log.Fatal(err)
-	}
+	//sparkCfg.Get("spark.driver.port")
+	//
+	//app := goflint.CrateOrUpdate(&base).
+	//	WithSparkConf(sparkCfg).
+	//	Build()
+	fmt.Println(base)
+	//ctx := context.Background()
+	//
+	//if err := base.Submit(ctx); err != nil {
+	//	log.Fatal(err)
+	//}
 }

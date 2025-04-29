@@ -13,15 +13,8 @@ import (
 )
 
 type SparkApp struct {
-	command *SparkSubmitCmd
-	repr    string
+	repr string
 }
-
-// Compile-time check
-var (
-	_ common.Submitter = (*SparkApp)(nil)
-	_ common.Monitor   = (*SparkApp)(nil)
-)
 
 func (s *SparkApp) Submit(ctx context.Context) error {
 	sparkHome, present := os.LookupEnv(common.EnvSparkHome)

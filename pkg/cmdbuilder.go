@@ -4,34 +4,23 @@ import (
 	"strings"
 
 	"goflint/pkg/common"
-	"goflint/pkg/sparkconf"
 )
 
-type SparkSubmitCmd struct {
-	conf           *sparkconf.SparkConf
-	args           []string
-	application    string
-	aplicationArgs []string
-	command        string
+type SparkSubmit struct {
+	conf            common.SparkConf
+	args            []string
+	application     string
+	applicationArgs []string
 }
 
-func CrateOrUpdate(base *SparkApp) *SparkSubmitCmd {
+func CrateOrUpdate() *SparkSubmit {
 	// если base == nil, начинаем с пустого
-	if base == nil {
-		return &SparkSubmitCmd{}
-	}
-	return &SparkSubmitCmd{
-		conf:           base.command.conf,
-		args:           base.command.args,
-		application:    base.command.application,
-		aplicationArgs: base.command.aplicationArgs,
-		command:        base.command.command,
-	}
+	return &SparkSubmit{}
 }
 
 // spark://host:port, mesos://host:port, yarn,
 // k8s://https://host:port, or local (Default: local[*]).
-func (s *SparkSubmitCmd) WithMaster(master *string) *SparkSubmitCmd {
+func (s SparkSubmit) WithMaster(master *string) SparkSubmit {
 	if master != nil {
 		s.args = append(s.args, "--master", *master)
 	} else {
@@ -48,7 +37,7 @@ func (s *SparkSubmitCmd) WithMaster(master *string) *SparkSubmitCmd {
 // Whether to launch the driver program locally ("client") or
 // on one of the worker machines inside the cluster ("cluster")
 // (Default: client)
-func (s *SparkSubmitCmd) WithDeployMode(mode *string) *SparkSubmitCmd {
+func (s SparkSubmit) WithDeployMode(mode *string) SparkSubmit {
 	var deployMode string
 
 	if mode == nil {
@@ -60,42 +49,52 @@ func (s *SparkSubmitCmd) WithDeployMode(mode *string) *SparkSubmitCmd {
 	return s
 }
 
-func (s *SparkSubmitCmd) WithSparkConf(conf *sparkconf.SparkConf) *SparkSubmitCmd {
-	s.conf = s.conf.Merge(conf)
+func (s SparkSubmit) WithSparkConf(conf common.SparkConf) SparkSubmit {
+	var x common.SparkConf = s.conf
+	s.conf = x.Merge(conf)
 	return s
 }
 
-func (s *SparkSubmitCmd) Application(application string) *SparkSubmitCmd {
+func (s SparkSubmit) Application(application string) SparkSubmit {
 	s.application = application
 	return s
 }
 
-func (s *SparkSubmitCmd) ApplicationArgs(applicationArgs ...string) *SparkSubmitCmd {
-	s.aplicationArgs = append(s.aplicationArgs, applicationArgs...)
+func (s SparkSubmit) ApplicationArgs(applicationArgs ...string) SparkSubmit {
+	s.applicationArgs = append(s.applicationArgs, applicationArgs...)
 	return s
 }
 
-func (s *SparkSubmitCmd) WithName(name string) *SparkSubmitCmd {
+func (s SparkSubmit) WithName(name string) SparkSubmit {
 	s.args = append(s.args, "--name", name)
 	return s
 }
 
-func (s *SparkSubmitCmd) buildArgs() string {
+func (s SparkSubmit) buildArgs() string {
+	if len(s.args) == 0 {
+		return ""
+	}
 	return strings.Join(s.args, " ")
 }
 
-func (s *SparkSubmitCmd) buildAppArgs() string {
-	return strings.Join(s.aplicationArgs, " ")
+func (s SparkSubmit) buildAppArgs() string {
+	if len(s.applicationArgs) == 0 {
+		return ""
+	}
+	return strings.Join(s.applicationArgs, " ")
 }
 
-func (s *SparkSubmitCmd) buildConf() string {
+func (s SparkSubmit) buildConf() string {
+	if s.conf.IsEmpty() {
+		return ""
+	}
 	return strings.Join(s.conf.ToCommandLineArgs(), " ")
 }
 
-func (s *SparkSubmitCmd) Build() SparkApp {
+func (s SparkSubmit) Build() SparkApp {
 	// args + cfg + app + apparg
 	var b []string
 	b = []string{s.buildArgs(), s.buildConf(), s.application, s.buildAppArgs()}
 	cmd := strings.Join(b, " ")
-	return SparkApp{command: s, repr: cmd}
+	return SparkApp{repr: cmd}
 }
