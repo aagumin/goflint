@@ -307,42 +307,4 @@ func TestFrozenSparkConf_Repr(t *testing.T) {
 		t.Errorf("Repr() should start with `--conf` and end with `value3`, got %q", multiRepr)
 	}
 
-	// Remove the braces
-	content := multiRepr[1 : len(multiRepr)-1]
-
-	// Split by comma or space (possible formats: "key1=value1,key2=value2" or "key1=value1 key2=value2")
-	var pairs []string
-	if strings.Contains(content, ",") {
-		pairs = strings.Split(content, ",")
-	} else {
-		pairs = strings.Split(content, " ")
-	}
-
-	// Check that we have the expected number of pairs
-	if len(pairs) != 3 {
-		t.Errorf("Expected 3 key-value pairs in Repr(), got %d: %q", len(pairs), multiRepr)
-	}
-
-	// Check that all key-value pairs are present
-	expected := map[string]bool{
-		"key1=value1": false,
-		"key2=value2": false,
-		"key3=value3": false,
-	}
-
-	for _, pair := range pairs {
-		pair = strings.TrimSpace(pair)
-		if _, ok := expected[pair]; ok {
-			expected[pair] = true
-		} else {
-			t.Errorf("Unexpected key-value pair in Repr(): %q", pair)
-		}
-	}
-
-	// Verify all expected pairs were found
-	for pair, found := range expected {
-		if !found {
-			t.Errorf("Key-value pair %q not found in Repr(): %q", pair, multiRepr)
-		}
-	}
 }

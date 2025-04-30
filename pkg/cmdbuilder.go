@@ -13,14 +13,17 @@ type SparkSubmit struct {
 	applicationArgs []string
 }
 
-func CrateOrUpdate() *SparkSubmit {
+func CrateOrUpdate(app *SparkApp) *SparkSubmit {
 	// если base == nil, начинаем с пустого
+	if app == nil {
+		return &SparkSubmit{}
+	}
 	return &SparkSubmit{}
 }
 
 // spark://host:port, mesos://host:port, yarn,
 // k8s://https://host:port, or local (Default: local[*]).
-func (s SparkSubmit) WithMaster(master *string) SparkSubmit {
+func (s *SparkSubmit) WithMaster(master *string) *SparkSubmit {
 	if master != nil {
 		s.args = append(s.args, "--master", *master)
 	} else {
@@ -37,7 +40,7 @@ func (s SparkSubmit) WithMaster(master *string) SparkSubmit {
 // Whether to launch the driver program locally ("client") or
 // on one of the worker machines inside the cluster ("cluster")
 // (Default: client)
-func (s SparkSubmit) WithDeployMode(mode *string) SparkSubmit {
+func (s *SparkSubmit) WithDeployMode(mode *string) *SparkSubmit {
 	var deployMode string
 
 	if mode == nil {
@@ -49,49 +52,49 @@ func (s SparkSubmit) WithDeployMode(mode *string) SparkSubmit {
 	return s
 }
 
-func (s SparkSubmit) WithSparkConf(conf common.SparkConf) SparkSubmit {
-	var x common.SparkConf = s.conf
-	s.conf = x.Merge(conf)
+func (s *SparkSubmit) WithSparkConf(conf common.SparkConf) *SparkSubmit {
+	if s.conf == nil {
+		s.conf = conf
+	} else {
+		s.conf = s.conf.Merge(conf)
+	}
 	return s
 }
 
-func (s SparkSubmit) Application(application string) SparkSubmit {
+func (s *SparkSubmit) Application(application string) *SparkSubmit {
 	s.application = application
 	return s
 }
 
-func (s SparkSubmit) ApplicationArgs(applicationArgs ...string) SparkSubmit {
+func (s *SparkSubmit) ApplicationArgs(applicationArgs ...string) *SparkSubmit {
 	s.applicationArgs = append(s.applicationArgs, applicationArgs...)
 	return s
 }
 
-func (s SparkSubmit) WithName(name string) SparkSubmit {
+func (s *SparkSubmit) WithName(name string) *SparkSubmit {
 	s.args = append(s.args, "--name", name)
 	return s
 }
 
-func (s SparkSubmit) buildArgs() string {
+func (s *SparkSubmit) buildArgs() string {
 	if len(s.args) == 0 {
 		return ""
 	}
 	return strings.Join(s.args, " ")
 }
 
-func (s SparkSubmit) buildAppArgs() string {
+func (s *SparkSubmit) buildAppArgs() string {
 	if len(s.applicationArgs) == 0 {
 		return ""
 	}
 	return strings.Join(s.applicationArgs, " ")
 }
 
-func (s SparkSubmit) buildConf() string {
-	if s.conf.IsEmpty() {
-		return ""
-	}
+func (s *SparkSubmit) buildConf() string {
 	return strings.Join(s.conf.ToCommandLineArgs(), " ")
 }
 
-func (s SparkSubmit) Build() SparkApp {
+func (s *SparkSubmit) Build() SparkApp {
 	// args + cfg + app + apparg
 	var b []string
 	b = []string{s.buildArgs(), s.buildConf(), s.application, s.buildAppArgs()}

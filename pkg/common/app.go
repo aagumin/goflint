@@ -38,7 +38,7 @@ type SparkConf interface {
 	Merge(other SparkConf) SparkConf
 }
 
-type SparkConfHelpets interface {
+type SparkConfHelpers interface {
 	SparkConf
 	IsEmpty() bool
 	Repr() string
