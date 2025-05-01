@@ -1,6 +1,9 @@
 package common
 
-import "context"
+import (
+	"context"
+	"os/exec"
+)
 
 //
 //┌────────────────────────┐
@@ -18,12 +21,12 @@ import "context"
 //							 ▲
 //                .Build()   │
 //					┌───────────────────┐
-//					│ SparkSubmitCmd    │
+//					│ SparkSubmit    	│
 //					│ (builder)         │
 //					└───────────────────┘
 
 type Submitter interface {
-	Submit(ctx context.Context) error
+	Submit(ctx context.Context) (*exec.Cmd, error)
 }
 
 type Monitor interface {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	goflint "goflint/pkg"
 	sconf "goflint/pkg/sparkconf"
 	"log"
@@ -22,7 +23,7 @@ func main() {
 		goflint.WithApplication(scalaExamples),
 		goflint.WithSparkConf(sparkCfg),
 		goflint.WithName("GoFlint"),
-		goflint.WithMainClass("org.apache.spark.examples.SparkPi"),
+		goflint.WithMainClass("org.apache.spark.examples.parkPi"),
 	)
 
 	base := submit.Build()
@@ -30,12 +31,15 @@ func main() {
 	updatedSubmit := goflint.ExtendSparkApp(
 		&base,
 		goflint.WithMaster(""),
-		// Другие опции...
+		// Other options...
+
 	)
 
 	app := updatedSubmit.Build()
-	ctx := context.TODO()
-	if err := app.Submit(ctx); err != nil {
-		log.Fatal(err)
+	ctx := context.Background()
+	_, err = app.Submit(ctx)
+	if err != nil {
+		fmt.Println(err)
 	}
+
 }

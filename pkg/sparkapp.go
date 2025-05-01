@@ -16,31 +16,41 @@ type SparkApp struct {
 	cmd *SparkSubmit
 }
 
-func (s *SparkApp) Submit(ctx context.Context) error {
+func (s *SparkApp) Submit(ctx context.Context) (*exec.Cmd, error) {
 	sparkHome, present := os.LookupEnv(common.EnvSparkHome)
 	if !present {
-		return fmt.Errorf("env %s is not specified", common.EnvSparkHome)
+		return nil, fmt.Errorf("env %s is not specified", common.EnvSparkHome)
 	}
+
 	command := filepath.Join(sparkHome, "bin", "spark-submit")
-	fmt.Println(command, s.cmd.Repr())
-	cmd := exec.Command(command, s.cmd.Repr())
-	_, err := cmd.Output()
+
+	args := strings.Fields(s.cmd.Repr())
+
+	cmd := exec.CommandContext(ctx, command, args...)
+
+	fmt.Printf("Executing: %s %s", command, strings.Join(args, " "))
+
+	output, err := cmd.CombinedOutput()
+
 	if err != nil {
 		var errorMsg string
 		var exitErr *exec.ExitError
 		if errors.As(err, &exitErr) {
 			errorMsg = string(exitErr.Stderr)
 		}
-		// The driver pod of the application already exists.
+
 		if strings.Contains(errorMsg, common.ErrorCodePodAlreadyExists) {
-			return fmt.Errorf("driver pod already exist")
+			return nil, fmt.Errorf("driver pod already exists")
 		}
+
 		if errorMsg != "" {
-			return fmt.Errorf("failed to run spark-submit: %s", errorMsg)
+			return nil, fmt.Errorf("failed to run spark-submit: %s", errorMsg)
 		}
-		return fmt.Errorf("failed to run spark-submit: %v", err)
+		return nil, fmt.Errorf("failed to run spark-submit: %v", err)
 	}
-	return nil
+	fmt.Printf("Spark submit succeeded: %s", string(output))
+	fmt.Println(output)
+	return cmd, nil
 }
 
 func (s *SparkApp) Status(ctx context.Context) (string, error) {

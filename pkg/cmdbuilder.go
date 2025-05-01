@@ -17,7 +17,6 @@ type SparkSubmitOption func(*SparkSubmit)
 func NewSparkApp(options ...SparkSubmitOption) *SparkSubmit {
 	s := &SparkSubmit{}
 
-	// Применяем все опции
 	for _, option := range options {
 		option(s)
 	}
@@ -28,7 +27,6 @@ func NewSparkApp(options ...SparkSubmitOption) *SparkSubmit {
 func ExtendSparkApp(app *SparkApp, options ...SparkSubmitOption) *SparkSubmit {
 	s := &SparkSubmit{conf: app.cmd.conf, application: app.cmd.application, applicationArgs: app.cmd.applicationArgs, args: app.cmd.args}
 
-	// Применяем все опции
 	for _, option := range options {
 		option(s)
 	}
