@@ -1,10 +1,11 @@
 package sparkconf
 
 import (
-	"goflint/pkg/common"
 	"reflect"
 	"strings"
 	"testing"
+
+	"goflint/pkg/common"
 )
 
 func TestNewFrozenConf(t *testing.T) {
@@ -248,7 +249,7 @@ func TestFrozenSparkConf_Merge(t *testing.T) {
 // Test interface implementation
 func TestFrozenSparkConf_Interface(t *testing.T) {
 	// Check that FrozenSparkConf implements SparkConf interface
-	var conf common.SparkConf = NewFrozenConf(map[string]string{})
+	var conf common.SparkConf
 
 	// If code compiles, the interface is implemented correctly
 	// But also check a few methods
@@ -306,5 +307,4 @@ func TestFrozenSparkConf_Repr(t *testing.T) {
 	if !strings.HasPrefix(multiRepr, "--conf") || !strings.HasSuffix(multiRepr, "value3") {
 		t.Errorf("Repr() should start with `--conf` and end with `value3`, got %q", multiRepr)
 	}
-
 }

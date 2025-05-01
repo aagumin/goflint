@@ -13,7 +13,7 @@ import (
 )
 
 type SparkApp struct {
-	repr string
+	cmd *SparkSubmit
 }
 
 func (s *SparkApp) Submit(ctx context.Context) error {
@@ -22,8 +22,8 @@ func (s *SparkApp) Submit(ctx context.Context) error {
 		return fmt.Errorf("env %s is not specified", common.EnvSparkHome)
 	}
 	command := filepath.Join(sparkHome, "bin", "spark-submit")
-	fmt.Println(command)
-	cmd := exec.Command(command, s.repr)
+	fmt.Println(command, s.cmd.Repr())
+	cmd := exec.Command(command, s.cmd.Repr())
 	_, err := cmd.Output()
 	if err != nil {
 		var errorMsg string

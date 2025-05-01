@@ -1,8 +1,9 @@
 package sparkconf
 
 import (
-	"goflint/pkg/common"
 	"strings"
+
+	"goflint/pkg/common"
 )
 
 type FrozenSparkConf struct {
@@ -24,7 +25,6 @@ func (conf FrozenSparkConf) Get(key string) string {
 
 // GetAll returns all configuration properties
 func (conf FrozenSparkConf) GetAll() map[string]string {
-
 	// Return a copy of the map to prevent external modifications
 	copyd := make(map[string]string, len(conf.props))
 	for k, v := range conf.props {
@@ -42,7 +42,6 @@ func (conf FrozenSparkConf) Contains(key string) bool {
 // ToCommandLineArgs converts the configuration to command-line arguments
 // for spark-submit in the format: --conf key=value
 func (conf FrozenSparkConf) ToCommandLineArgs() []string {
-
 	args := make([]string, 0, len(conf.props))
 	for k, v := range conf.props {
 		if strings.HasPrefix(k, "spark.") {

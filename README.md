@@ -24,28 +24,38 @@ go get github.com/aagumin/goflint
 ```go
 package main
 
-import github.com/aagumin/goflint
+import (
+   "context"
+   goflint "goflint/pkg"
+   sconf "goflint/pkg/sparkconf"
+   "log"
+   "os"
+   "path"
+)
 
 func main() {
-   base := goflint.CrateOrUpdate().
-      Application("job.jar").
-      WithMaster("k8s://http://k8s-master:443").
-      WithName("GoFlint").
-      Build()
-   
-   // base <- SparkApp{Kill, Status, Submit}
-   
-   sparkCfg := goflint.SparkConf{}
-   sparkCfg.Set("spark.driver.port", "grpc")
-   
-   app := goflint.CrateOrUpdate(base).
-      WithSparkConf(sparkCfg)
-      NumExecutors(5).
-      DriverMemory("16Gi").
-      Build()
+   xx := map[string]string{"spark.driver.port": "4031", "spark.driver.host": "localhost"}
+   sparkCfg := sconf.NewFrozenConf(xx)
 
-   ctx := context.Background()
+   scalaExamples := path.Join(os.Getenv("SPARK_HOME"), "spark-examples.jar")
 
+   submit := goflint.NewSparkApp(
+      goflint.WithApplication(scalaExamples),
+      goflint.WithSparkConf(sparkCfg),
+      goflint.WithName("GoFlint"),
+      goflint.WithMainClass("org.apache.spark.examples.SparkPi"),
+   )
+
+   base := submit.Build()
+
+   updatedSubmit := goflint.ExtendSparkApp(
+      &base,
+      goflint.WithMaster(""),
+      // Other options...
+   )
+
+   app := updatedSubmit.Build()
+   ctx := context.TODO()
    if err := app.Submit(ctx); err != nil {
       log.Fatal(err)
    }
