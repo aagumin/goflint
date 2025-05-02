@@ -1,9 +1,9 @@
-package goflint
+package flint
 
 import (
 	"strings"
 
-	"goflint/pkg/common"
+	"github.com/aagumin/goflint/flint/common"
 )
 
 type SparkSubmit struct {

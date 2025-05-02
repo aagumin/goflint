@@ -1,4 +1,4 @@
-package goflint
+package flint
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"goflint/pkg/common"
+	"github.com/aagumin/goflint/flint/common"
 )
 
 type SparkApp struct {

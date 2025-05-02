@@ -1,9 +1,8 @@
 package sparkconf
 
 import (
+	"github.com/aagumin/goflint/flint/common"
 	"strings"
-
-	"goflint/pkg/common"
 )
 
 type FrozenSparkConf struct {

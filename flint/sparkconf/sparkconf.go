@@ -1,7 +1,7 @@
 package sparkconf
 
 import (
-	"goflint/pkg/common"
+	"github.com/aagumin/goflint/flint/common"
 	"strings"
 	"sync"
 )
