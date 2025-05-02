@@ -23,7 +23,7 @@ func main() {
 		flint.WithApplication(scalaExamples),
 		flint.WithSparkConf(sparkCfg),
 		flint.WithName("GoFlint"),
-		flint.WithMainClass("org.apache.spark.examples.parkPi"),
+		flint.WithMainClass("org.apache.spark.examples.SparkPi"),
 	)
 
 	base := submit.Build()
