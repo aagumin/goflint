@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"goflint/pkg/common"
+	"github.com/aagumin/goflint/flint/common"
 )
 
 func TestNewFrozenConf(t *testing.T) {

@@ -16,7 +16,7 @@ Designed for clarity and type safety, it wraps Spark’s CLI with a fluent Go AP
 ## Installation
 
 ```bash
-go get github.com/aagumin/goflint
+go get github.com/aagumin/flint
 ```
 
 ## Example usage
@@ -26,40 +26,44 @@ package main
 
 import (
    "context"
-   goflint "goflint/pkg"
-   sconf "goflint/pkg/sparkconf"
-   "log"
+   "fmt"
    "os"
    "path"
+   "github.com/aagumin/goflint/flint"
+   sc "github.com/aagumin/goflint/flint/sparkconf"
 )
 
 func main() {
    xx := map[string]string{"spark.driver.port": "4031", "spark.driver.host": "localhost"}
-   sparkCfg := sconf.NewFrozenConf(xx)
+   sparkCfg := sc.NewFrozenConf(xx)
 
-   scalaExamples := path.Join(os.Getenv("SPARK_HOME"), "spark-examples.jar")
+   scalaExamples := path.Join(os.Getenv("SPARK_HOME"), "examples/jars/spark-examples_2.12-3.5.3.jar")
 
-   submit := goflint.NewSparkApp(
-      goflint.WithApplication(scalaExamples),
-      goflint.WithSparkConf(sparkCfg),
-      goflint.WithName("GoFlint"),
-      goflint.WithMainClass("org.apache.spark.examples.SparkPi"),
+   submit := flint.NewSparkApp(
+      flint.WithApplication(scalaExamples),
+      flint.WithSparkConf(sparkCfg),
+      flint.WithName("GoFlint"),
+      flint.WithMainClass("org.apache.spark.examples.parkPi"),
    )
 
    base := submit.Build()
 
-   updatedSubmit := goflint.ExtendSparkApp(
+   updatedSubmit := flint.ExtendSparkApp(
       &base,
-      goflint.WithMaster(""),
+      flint.WithMaster(""),
       // Other options...
+
    )
 
    app := updatedSubmit.Build()
-   ctx := context.TODO()
-   if err := app.Submit(ctx); err != nil {
-      log.Fatal(err)
+   ctx := context.Background()
+   _, err = app.Submit(ctx)
+   if err != nil {
+      fmt.Println(err)
    }
+
 }
+
 ```
 
 ## Design Principles
