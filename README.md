@@ -1,5 +1,7 @@
 # GoFlint 🔥
 
+[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=aagumin_goflint)
+
 > **[WIP]** Project in active dev state.
 
 **GoFlint** is an idiomatic Go library for submitting Apache Spark jobs via `spark-submit`.  
