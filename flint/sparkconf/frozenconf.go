@@ -2,6 +2,7 @@ package sparkconf
 
 import (
 	"github.com/aagumin/goflint/flint/common"
+	"maps"
 	"strings"
 )
 
@@ -12,8 +13,9 @@ type FrozenSparkConf struct {
 // NewSparkConf creates a new SparkConf instance. If props empty, get deafut system propertiers.
 func NewFrozenConf(data map[string]string) FrozenSparkConf {
 	// TODO load spark-default.conf
+	res := maps.Clone(data)
 	return FrozenSparkConf{
-		props: data,
+		props: res,
 	}
 }
 
@@ -56,7 +58,7 @@ func (conf FrozenSparkConf) IsEmpty() bool {
 
 // Merge combines another SyncSparkConf into this one and return NEW FrozenSparkConf
 func (conf FrozenSparkConf) Merge(other common.SparkConf) common.SparkConf {
-	a := conf.props
+	a := maps.Clone(conf.props)
 
 	for k, v := range other.GetAll() {
 		a[k] = v

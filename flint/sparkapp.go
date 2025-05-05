@@ -13,10 +13,15 @@ import (
 )
 
 type SparkApp struct {
-	cmd *SparkSubmit
+	sparkSubmit *SparkSubmit
+	cmd         *exec.Cmd
+	isRunning   bool
 }
 
-func (s *SparkApp) Submit(ctx context.Context) (*exec.Cmd, error) {
+func (s *SparkApp) Submit(ctx context.Context) ([]byte, error) {
+	if s.isRunning {
+		return nil, errors.New("already running")
+	}
 	sparkHome, present := os.LookupEnv(common.EnvSparkHome)
 	if !present {
 		return nil, fmt.Errorf("env %s is not specified", common.EnvSparkHome)
@@ -24,7 +29,7 @@ func (s *SparkApp) Submit(ctx context.Context) (*exec.Cmd, error) {
 
 	command := filepath.Join(sparkHome, "bin", "spark-submit")
 
-	args := strings.Fields(s.cmd.Repr())
+	args := strings.Fields(s.sparkSubmit.Repr())
 
 	cmd := exec.CommandContext(ctx, command, args...)
 
@@ -46,19 +51,22 @@ func (s *SparkApp) Submit(ctx context.Context) (*exec.Cmd, error) {
 		if errorMsg != "" {
 			return nil, fmt.Errorf("failed to run spark-submit: %s", errorMsg)
 		}
-		return nil, fmt.Errorf("failed to run spark-submit: %v", err)
+		return nil, fmt.Errorf("failed to run spark-submit: %v, \n %s", err, string(output))
 	}
 	fmt.Printf("Spark submit succeeded: %s", string(output))
-	fmt.Println(output)
-	return cmd, nil
+	s.isRunning = true
+	return output, nil
 }
 
 func (s *SparkApp) Status(ctx context.Context) (string, error) {
-	// TODO: Implement real status logic
-	return "", fmt.Errorf("not implemented")
+	if s.cmd != nil {
+		return fmt.Sprintf("App already done or canceled"), nil
+	}
+
+	return "done", nil
 }
 
 func (s *SparkApp) Kill(ctx context.Context) error {
-	// TODO: Implement real kill logic
-	return fmt.Errorf("not implemented yet")
+	err := s.cmd.Cancel()
+	return err
 }

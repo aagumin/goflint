@@ -7,7 +7,6 @@ import (
 	sc "github.com/aagumin/goflint/flint/sparkconf"
 	"log"
 	"os"
-	"path"
 )
 
 func main() {
@@ -17,13 +16,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	scalaExamples := path.Join(os.Getenv("SPARK_HOME"), "examples/jars/spark-examples_2.12-3.5.3.jar")
 
 	submit := flint.NewSparkApp(
-		flint.WithApplication(scalaExamples),
+		flint.WithApplication("examples/python/freeze.py"),
 		flint.WithSparkConf(sparkCfg),
 		flint.WithName("GoFlint"),
-		flint.WithMainClass("org.apache.spark.examples.SparkPi"),
 	)
 
 	base := submit.Build()
@@ -37,9 +34,11 @@ func main() {
 
 	app := updatedSubmit.Build()
 	ctx := context.Background()
-	_, err = app.Submit(ctx)
+	ds, err := app.Submit(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println(ds)
+	fmt.Println(app.Status(ctx))
 
 }

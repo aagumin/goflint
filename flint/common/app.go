@@ -2,7 +2,6 @@ package common
 
 import (
 	"context"
-	"os/exec"
 )
 
 //
@@ -26,7 +25,7 @@ import (
 //					└───────────────────┘
 
 type Submitter interface {
-	Submit(ctx context.Context) (*exec.Cmd, error)
+	Submit(ctx context.Context) ([]byte, error)
 }
 
 type Monitor interface {

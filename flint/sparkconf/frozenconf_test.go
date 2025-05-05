@@ -1,6 +1,7 @@
 package sparkconf
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 	"testing"
@@ -55,6 +56,26 @@ func TestFrozenSparkConf_Get(t *testing.T) {
 	// Check non-existent key
 	if val := conf.Get("nonexistent"); val != "" {
 		t.Errorf("Get() for non-existent key should return empty string, got %q", val)
+	}
+}
+
+func TestFrozenSparkConf_Mutate(t *testing.T) {
+	testData := map[string]string{
+		"spark.key1": "value1",
+		"spark.key2": "value2",
+	}
+
+	conf := NewFrozenConf(testData)
+
+	// Check existing key
+	if val := conf.Get("spark.key1"); val != "value1" {
+		t.Errorf("Get('spark.key1') returned %q, expected 'value1'", val)
+	}
+	// Check existing key
+	testData["spark.test.1"] = "test_immutableConf"
+
+	if val := conf.Get("spark.test.1"); val != "" {
+		t.Errorf("Get('spark.key1') returned %q, expected '' ", val)
 	}
 }
 
@@ -197,15 +218,15 @@ func TestFrozenSparkConf_IsEmpty(t *testing.T) {
 func TestFrozenSparkConf_Merge(t *testing.T) {
 	// Create source configuration
 	srcData := map[string]string{
-		"key1":   "value1",
-		"common": "srcValue",
+		"spark.key1":   "value1",
+		"spark.common": "srcValue",
 	}
 	srcConf := NewFrozenConf(srcData)
 
 	// Create configuration to merge
 	otherData := map[string]string{
-		"key2":   "value2",
-		"common": "otherValue",
+		"spark.key2":   "value2",
+		"spark.common": "otherValue",
 	}
 	otherConf := NewFrozenConf(otherData)
 
@@ -226,9 +247,9 @@ func TestFrozenSparkConf_Merge(t *testing.T) {
 
 	// Check contents of merged configuration
 	expected := map[string]string{
-		"key1":   "value1",
-		"key2":   "value2",
-		"common": "otherValue", // Should be overwritten by otherConf value
+		"spark.key1":   "value1",
+		"spark.key2":   "value2",
+		"spark.common": "otherValue", // Should be overwritten by otherConf value
 	}
 
 	if !reflect.DeepEqual(resultConf.GetAll(), expected) {
@@ -237,6 +258,8 @@ func TestFrozenSparkConf_Merge(t *testing.T) {
 
 	// Check that source configuration is not modified
 	if !reflect.DeepEqual(srcConf.GetAll(), srcData) {
+		fmt.Println(srcConf.GetAll())
+		fmt.Println(srcData)
 		t.Errorf("Source configuration should not be modified after Merge()")
 	}
 

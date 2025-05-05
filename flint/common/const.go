@@ -1,5 +1,7 @@
 package common
 
+const ErrorCodePodAlreadyExists = "mockkkk"
+
 // Spark environment variables.
 const (
 	EnvSparkHome = "SPARK_HOME"

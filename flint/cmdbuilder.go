@@ -25,7 +25,7 @@ func NewSparkApp(options ...SparkSubmitOption) *SparkSubmit {
 }
 
 func ExtendSparkApp(app *SparkApp, options ...SparkSubmitOption) *SparkSubmit {
-	s := &SparkSubmit{conf: app.cmd.conf, application: app.cmd.application, applicationArgs: app.cmd.applicationArgs, args: app.cmd.args}
+	s := &SparkSubmit{conf: app.sparkSubmit.conf, application: app.sparkSubmit.application, applicationArgs: app.sparkSubmit.applicationArgs, args: app.sparkSubmit.args}
 
 	for _, option := range options {
 		option(s)
@@ -36,10 +36,10 @@ func ExtendSparkApp(app *SparkApp, options ...SparkSubmitOption) *SparkSubmit {
 
 func WithExistApp(app *SparkApp) SparkSubmitOption {
 	return func(s *SparkSubmit) {
-		s.args = app.cmd.applicationArgs
-		s.application = app.cmd.application
-		s.applicationArgs = app.cmd.applicationArgs
-		s.conf = app.cmd.conf
+		s.args = app.sparkSubmit.applicationArgs
+		s.application = app.sparkSubmit.application
+		s.applicationArgs = app.sparkSubmit.applicationArgs
+		s.conf = app.sparkSubmit.conf
 	}
 }
 
@@ -137,5 +137,5 @@ func (s *SparkSubmit) Repr() string {
 
 func (s *SparkSubmit) Build() SparkApp {
 	// args + cfg + app + apparg
-	return SparkApp{cmd: s}
+	return SparkApp{sparkSubmit: s}
 }
