@@ -5,14 +5,23 @@ import (
 	"testing"
 )
 
+func unSetFix(originalHostEnv string, originalPortEnv string) error {
+	err := os.Setenv(EnvKubernetesServiceHost, originalHostEnv)
+	if err != nil {
+		return err
+	}
+	err = os.Setenv(EnvKubernetesServicePort, originalPortEnv)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func TestGetK8SMasterURL(t *testing.T) {
 	originalHostEnv := os.Getenv(EnvKubernetesServiceHost)
 	originalPortEnv := os.Getenv(EnvKubernetesServicePort)
 
-	defer func() {
-		os.Setenv(EnvKubernetesServiceHost, originalHostEnv)
-		os.Setenv(EnvKubernetesServicePort, originalPortEnv)
-	}()
+	defer unSetFix(originalHostEnv, originalPortEnv)
 
 	tests := []struct {
 		name         string
@@ -67,8 +76,14 @@ func TestGetK8SMasterURL(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			os.Setenv(EnvKubernetesServiceHost, tt.hostEnvValue)
-			os.Setenv(EnvKubernetesServicePort, tt.portEnvValue)
+			err := os.Setenv(EnvKubernetesServiceHost, tt.hostEnvValue)
+			if err != nil {
+				return
+			}
+			err = os.Setenv(EnvKubernetesServicePort, tt.portEnvValue)
+			if err != nil {
+				return
+			}
 
 			url, err := GetK8SMasterURL()
 
@@ -92,13 +107,16 @@ func TestGetK8SMasterURLWithUnsetEnv(t *testing.T) {
 	originalHostEnv := os.Getenv(EnvKubernetesServiceHost)
 	originalPortEnv := os.Getenv(EnvKubernetesServicePort)
 
-	defer func() {
-		os.Setenv(EnvKubernetesServiceHost, originalHostEnv)
-		os.Setenv(EnvKubernetesServicePort, originalPortEnv)
-	}()
+	defer unSetFix(originalHostEnv, originalPortEnv)
 
-	os.Unsetenv(EnvKubernetesServiceHost)
-	os.Unsetenv(EnvKubernetesServicePort)
+	err := os.Unsetenv(EnvKubernetesServiceHost)
+	if err != nil {
+		return
+	}
+	err = os.Unsetenv(EnvKubernetesServicePort)
+	if err != nil {
+		return
+	}
 
 	url, err := GetK8SMasterURL()
 

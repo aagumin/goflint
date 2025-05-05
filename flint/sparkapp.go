@@ -60,7 +60,7 @@ func (s *SparkApp) Submit(ctx context.Context) ([]byte, error) {
 
 func (s *SparkApp) Status(ctx context.Context) (string, error) {
 	if s.cmd != nil {
-		return fmt.Sprintf("App already done or canceled"), nil
+		return "alreay done or cancel", nil
 	}
 
 	return "done", nil

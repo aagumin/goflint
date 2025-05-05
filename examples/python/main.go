@@ -34,11 +34,10 @@ func main() {
 
 	app := updatedSubmit.Build()
 	ctx := context.Background()
-	ds, err := app.Submit(ctx)
+	_, err = app.Submit(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(ds)
 	fmt.Println(app.Status(ctx))
 
 }
