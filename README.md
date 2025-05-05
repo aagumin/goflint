@@ -4,7 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/aagumin/goflint)](https://goreportcard.com/report/github.com/aagumin/goflint)
 [![Maintainability](https://api.codeclimate.com/v1/badges/aabaf6a2d52511b3d581/maintainability)](https://codeclimate.com/github/aagumin/goflint/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/aabaf6a2d52511b3d581/test_coverage)](https://codeclimate.com/github/aagumin/goflint/test_coverage)
-[![Known Vulnerabilities](https://snyk.io/test/github/aagumin/goflint/badge.svg)](https://snyk.io/test/github/aagumin/goflint)
+[![Known Vulnerabilities](https://snyk.io/org/github/aagumin/goflint/badge.svg)](https://snyk.io/org/github/aagumin/goflint)
 
 > **[WIP]** Project in active dev state.
 
