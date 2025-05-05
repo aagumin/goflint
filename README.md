@@ -5,6 +5,8 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/aabaf6a2d52511b3d581/maintainability)](https://codeclimate.com/github/aagumin/goflint/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/aabaf6a2d52511b3d581/test_coverage)](https://codeclimate.com/github/aagumin/goflint/test_coverage)
 [![Known Vulnerabilities](https://snyk.io/test/github/aagumin/goflint/badge.svg)](https://app.snyk.io/org/aagumin/project/f1c4783a-33e3-4ad8-8c2d-1dc1f67e1866)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Faagumin%2Fgoflint.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Faagumin%2Fgoflint?ref=badge_shield&issueType=license)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Faagumin%2Fgoflint.svg?type=shield&issueType=security)](https://app.fossa.com/projects/git%2Bgithub.com%2Faagumin%2Fgoflint?ref=badge_shield&issueType=security)
 
 > **[WIP]** Project in active dev state.
 
